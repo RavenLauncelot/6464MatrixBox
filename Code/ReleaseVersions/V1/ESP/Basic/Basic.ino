@@ -358,7 +358,6 @@ void IdleLogic(){
 
 int byteCounter = 0;
 int chunk = 0;
-int chunkCounter = 0;
 void StreamLogic(){
 
   packetSize = udp.parsePacket();
@@ -368,13 +367,12 @@ void StreamLogic(){
     //Serial.print(udp.peek());
     //Serial.println("Received");
     udp.read(&chunkNumber, 1);
-    chunkCounter += chunkNumber;
     udp.read(frameBuffer[chunkNumber], chunkSize-1);
       
     chunk = 0;
     byteCounter = 0;
     //if all chunks sent draw frame
-    if (chunkCounter == 120){
+    if (chunkNumber == ChunkPerFrame-1){
       for (int x = 0; x < PANEL_WIDTH; x++){
         for (int y = 0; y < PANEL_HEIGHT; y++){   
           if (byteCounter >= chunkSize-1){  //Rememeber the chunk number is removed!!!!! hence minus one :3
@@ -389,12 +387,10 @@ void StreamLogic(){
           //delay(10);
         }
       }
-
-      udp.beginPacket(deviceIp, PORT);
-      udp.write(chunkReceived, 3);
-      udp.endPacket();
     }
 
-    
+    udp.beginPacket(deviceIp, PORT);
+    udp.write(chunkReceived, 3);
+    udp.endPacket();
   }
 }

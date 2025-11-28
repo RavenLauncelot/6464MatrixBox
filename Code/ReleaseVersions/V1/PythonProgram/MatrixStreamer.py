@@ -113,14 +113,14 @@ def StreamVideo(maxChunkSize, videoAddress):
     
     while capture.isOpened():
         ret, frame = capture.read()
-        #ret, frame = capture.read()
+        ret, frame = capture.read()
 
         if (ret == False):
             print("Video Ended")
             break
     
         frame = cv2.resize(frame, (64,64))
-        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        rgb = cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)
 
         #full frame data in bytes
         data = rgb.tobytes()
@@ -132,27 +132,27 @@ def StreamVideo(maxChunkSize, videoAddress):
             chunkToSend[0] = i
             dataCounter = 1 #starts on one as the first byte is added already
             chunkSending = True
-            print("Sending new chunk")
             while chunkSending:
                 #print("Adding data of x,y: " ,x," ",y)
                 chunkToSend[dataCounter] = data[index]
                 dataCounter += 1
                 index += 1
-                if (dataCounter == maxChunkSize):  #need to minus one cus index     
-                    soc.sendto(chunkToSend, (espIp, espPort))
-                    print("Chunk sent")
-                    time.sleep(0.1)
-                    chunkSending = False
+                if (dataCounter == maxChunkSize-1):  #need to minus one cus index
+                    sent = False
+                    while (sent == False):
+                        #time.sleep(0.01)
+                        soc.sendto(chunkToSend, (espIp, espPort))
+                            
+                        try:
+                            receivedPacket = soc.recv(3)
 
-                
-                    
-        try:
-            receivedPacket = soc.recv(3)
-            print("Next frame")
-            #frame printed start sending new packets
-                    
-        except:
-            print("Packet failed to send trying again")                
+                            if (receivedPacket[0] == 16):
+                                sent = True
+                                #new chunk so need to set next chunk number
+                                chunkSending = False
+                                break
+                        except:
+                            print("Packet failed to send trying again")
                 
                                 
                         
