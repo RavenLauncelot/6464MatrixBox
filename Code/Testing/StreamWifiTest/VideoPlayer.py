@@ -17,9 +17,10 @@ MAXPACKETSIZE = FRAME_SIZE // PACKETCHUNKS
 
 videoSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-capture = cv2.VideoCapture("C:/Users/launc/Documents/GitHub/MatrixAssistant/Code/LCDandMatrixTest/Wifi/BadApple.mp4")
+capture = cv2.VideoCapture("BadApple.mp4")
 
 print("File opened: ", capture.isOpened())
+
 
 while capture.isOpened():
     ret, frame = capture.read()
@@ -30,7 +31,10 @@ while capture.isOpened():
         continue;
         
     frame = cv2.resize(frame, (64,64))
-    rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    rgb = cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)
+
+    print(rgb)
+    input()
 
     data = rgb.tobytes()
     #videoSocket.sendto(data, (ESP_LOCAL_IP, ESP_PORT))
