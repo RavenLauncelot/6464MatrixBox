@@ -117,7 +117,7 @@ void setup() {
   if(not matrix->begin()){
     Serial.println("****** !KABOOM! I2S memory allocation failed ***********");
   }
-  matrix->setBrightness(255);
+  matrix->setBrightness(10);
 
   Serial.println("MATRIX SETUP DONE");
 
@@ -370,11 +370,13 @@ void StreamLogic(){
     udp.read(&chunkNumber, 1);
     chunkCounter += chunkNumber;
     udp.read(frameBuffer[chunkNumber], chunkSize-1);
-      
+    //Serial.print("Chunk received chunkCounter: ");
+    //Serial.println(chunkCounter);
     chunk = 0;
     byteCounter = 0;
     //if all chunks sent draw frame
-    if (chunkCounter == 120){
+    if (chunkCounter >= 120){
+      //Serial.println("All chunks received displaying frame");
       for (int x = 0; x < PANEL_WIDTH; x++){
         for (int y = 0; y < PANEL_HEIGHT; y++){   
           if (byteCounter >= chunkSize-1){  //Rememeber the chunk number is removed!!!!! hence minus one :3
@@ -390,6 +392,7 @@ void StreamLogic(){
         }
       }
 
+      chunkCounter = 0;
       udp.beginPacket(deviceIp, PORT);
       udp.write(chunkReceived, 3);
       udp.endPacket();

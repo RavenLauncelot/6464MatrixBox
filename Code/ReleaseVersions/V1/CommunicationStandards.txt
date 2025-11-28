@@ -7,16 +7,21 @@ Command List in the form of a Byte Array
 Commands will be in the form of 3 bytes.
 
 { (1 0 0 0 0 0 0 0) () () } Ping (sent from python script when connecting. Or from matrix when confirming connection still exists)
-HEX: 80
+HEX: 80, 00, 00
+Decimal: 128, 0, 0
 
 { (1 1 0 0 0 0 0 0) () () } Pong (packet received, sent back to the recipient)
-HEX: C0
+HEX: C0, 00, 00
+Decimal: 192, 0, 0
 
 { (0 0 1 0 0 0 0 0) () () } Stream video request (Sent from python script when sending a video)
-HEX: 20
+HEX: 20, 00, 00
+Decimal: 32, 0, 0
 
 { (0 0 1 1 0 0 0 0) (Max Packet size) (Max packet size) } Stream request accepted (sent from matrix to python script) (UDP max packet size (to send to matrix) in last 2 bytes as uint16)
-HEX: 30
+HEX: 30, 00, 00
+Decimal: 48, 0, 0
 
 { (0 0 0 1 0 0 0 0) (Chunk received) () } Frame packet received (Sent to python script to confirm packet has been received, will send next frame packet when received)
-HEX: 10
+HEX: 10, 00, 00
+Decimal: 16, 0, 0

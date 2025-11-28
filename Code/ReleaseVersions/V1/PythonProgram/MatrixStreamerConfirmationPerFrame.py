@@ -132,7 +132,7 @@ def StreamVideo(maxChunkSize, videoAddress):
             chunkToSend[0] = i
             dataCounter = 1 #starts on one as the first byte is added already
             chunkSending = True
-            print("Sending new chunk")
+            #print("Sending new chunk")
             while chunkSending:
                 #print("Adding data of x,y: " ,x," ",y)
                 chunkToSend[dataCounter] = data[index]
@@ -140,7 +140,7 @@ def StreamVideo(maxChunkSize, videoAddress):
                 index += 1
                 if (dataCounter == maxChunkSize):  #need to minus one cus index     
                     soc.sendto(chunkToSend, (espIp, espPort))
-                    print("Chunk sent")
+                    #print("Chunk sent")
                     time.sleep(0.1)
                     chunkSending = False
 
@@ -148,7 +148,7 @@ def StreamVideo(maxChunkSize, videoAddress):
                     
         try:
             receivedPacket = soc.recv(3)
-            print("Next frame")
+            #print("Next frame")
             #frame printed start sending new packets
                     
         except:
