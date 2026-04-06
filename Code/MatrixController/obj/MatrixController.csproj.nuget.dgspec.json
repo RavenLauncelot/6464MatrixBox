@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\launc\\Desktop\\MYAAA\\MatrixController\\MatrixController.csproj": {}
+    "C:\\Users\\launc\\Documents\\GitHub\\MatrixAssistant\\Code\\MatrixController\\MatrixController.csproj": {}
   },
   "projects": {
-    "C:\\Users\\launc\\Desktop\\MYAAA\\MatrixController\\MatrixController.csproj": {
+    "C:\\Users\\launc\\Documents\\GitHub\\MatrixAssistant\\Code\\MatrixController\\MatrixController.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\launc\\Desktop\\MYAAA\\MatrixController\\MatrixController.csproj",
+        "projectUniqueName": "C:\\Users\\launc\\Documents\\GitHub\\MatrixAssistant\\Code\\MatrixController\\MatrixController.csproj",
         "projectName": "MatrixController",
-        "projectPath": "C:\\Users\\launc\\Desktop\\MYAAA\\MatrixController\\MatrixController.csproj",
+        "projectPath": "C:\\Users\\launc\\Documents\\GitHub\\MatrixAssistant\\Code\\MatrixController\\MatrixController.csproj",
         "packagesPath": "C:\\Users\\launc\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\launc\\Desktop\\MYAAA\\MatrixController\\obj\\",
+        "outputPath": "C:\\Users\\launc\\Documents\\GitHub\\MatrixAssistant\\Code\\MatrixController\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
