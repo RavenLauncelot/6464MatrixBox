@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "lSG/VeiT7No=",
+  "dgSpecHash": "bxu9lWDKXQc=",
   "success": true,
-  "projectFilePath": "C:\\Users\\launc\\Desktop\\MYAAA\\MatrixController\\MatrixController.csproj",
+  "projectFilePath": "C:\\Users\\launc\\Documents\\GitHub\\MatrixAssistant\\Code\\MatrixController\\MatrixController.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\launc\\.nuget\\packages\\ffmpegcore\\5.4.0\\ffmpegcore.5.4.0.nupkg.sha512",
     "C:\\Users\\launc\\.nuget\\packages\\instances\\3.0.2\\instances.3.0.2.nupkg.sha512",

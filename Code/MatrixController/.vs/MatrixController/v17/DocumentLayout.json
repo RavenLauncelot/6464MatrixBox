@@ -1,9 +1,9 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\launc\\Desktop\\MYAAA\\MatrixController\\",
+  "WorkspaceRootPath": "C:\\Users\\launc\\Documents\\GitHub\\MatrixAssistant\\Code\\MatrixController\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{7B119C26-6383-403A-AAA7-AC3EFCDCEFAA}|MatrixController.csproj|c:\\users\\launc\\desktop\\myaaa\\matrixcontroller\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{7B119C26-6383-403A-AAA7-AC3EFCDCEFAA}|MatrixController.csproj|c:\\users\\launc\\documents\\github\\matrixassistant\\code\\matrixcontroller\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7B119C26-6383-403A-AAA7-AC3EFCDCEFAA}|MatrixController.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -32,11 +32,11 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\launc\\Desktop\\MYAAA\\MatrixController\\Program.cs",
+              "DocumentMoniker": "C:\\Users\\launc\\Documents\\GitHub\\MatrixAssistant\\Code\\MatrixController\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "C:\\Users\\launc\\Desktop\\MYAAA\\MatrixController\\Program.cs",
+              "ToolTip": "C:\\Users\\launc\\Documents\\GitHub\\MatrixAssistant\\Code\\MatrixController\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAL4AAAAAAAAAAAAAwJoAAAAgAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAIEAAAAdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-02-05T19:09:17.595Z",
               "EditorCaption": ""

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MatrixController")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+69fcadac6b083ba1af1478ba46e3d3c44d3b7729")]
 [assembly: System.Reflection.AssemblyProductAttribute("MatrixController")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MatrixController")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

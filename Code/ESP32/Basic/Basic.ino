@@ -14,10 +14,9 @@ MatrixPanel_I2S_DMA *matrix = nullptr;
 
 //matrix setup extended (for streaming)
 #define frameSize PANEL_WIDTH * PANEL_HEIGHT * 3
-#define ChunkPerFrame 16
+#define ChunkPerFrame 12
 const uint16_t chunkSize ((frameSize / ChunkPerFrame) + 1); //plus one for the chunkindex
 uint8_t frameBuffer[ChunkPerFrame][chunkSize-1]; //where the chunks are put together in order won't include the byte that says chunk number
-bool frameCompletion[ChunkPerFrame] = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false}; 
 uint8_t chunkNumber;
 
 //UDP commands 
@@ -364,7 +363,7 @@ void IdleLogic(){
 
 int byteCounter = 0;
 int chunk = 0;
-int chunkCheckSum = 0;
+int packetCounter = 0;
 unsigned long timeLastPacket = 0;
 int retries = 0;
 void StreamLogic(){
@@ -372,39 +371,31 @@ void StreamLogic(){
   packetSize = udp.parsePacket();
 
   if (packetSize == chunkSize){
-    //reset timer and retries since it's been sent a packet
-    timeLastPacket = millis();
-    retries = 0;
+    //Adding one to the packet counter
+    packetCounter++;
 
     udp.read(&chunkNumber, 1);
     udp.read(frameBuffer[chunkNumber-1], chunkSize-1);
 
     Serial.print("Received Chunk: ");
-    Serial.println(chunkNumber);
+    Serial.print(chunkNumber);
+    Serial.print("     Packet Counter: ");
+    Serial.println(packetCounter);
 
-    if (frameCompletion[chunkNumber-1] == false){
-      chunkCheckSum += chunkNumber; 
-      frameCompletion[chunkNumber-1] = true;
-
-      Serial.print("Received  NEW  Chunk: ");
-      Serial.print(chunkNumber);
-      Serial.print("  Current Checksum: ");
-      Serial.println(chunkCheckSum);
-    }
-
-    chunk = 0;
-    byteCounter = 0;
-    //if all chunks sent draw frame
-    if (chunkCheckSum == 136){
+    
+    //if all chunks sent, draw frame
+    if (packetCounter == ChunkPerFrame){
 
       Serial.println("FRAME COMPLETE");
 
-      //Reset checksum
-      chunkCheckSum = 0;
+      //Reset counters for nested loop
+      chunk = 0;
+      byteCounter = 0;
+      packetCounter = 0;
 
-      for (int x = 0; x < PANEL_WIDTH; x++){
-        for (int y = 0; y < PANEL_HEIGHT; y++){   
-          if (byteCounter >= chunkSize-1){  //Rememeber the chunk number is removed!!!!! hence minus one :3
+      for (int y = 0; y < PANEL_HEIGHT; y++){
+        for (int x = 0; x < PANEL_WIDTH; x++){   
+          if (byteCounter + 3 > chunkSize-1){  //Rememeber the chunk number is removed!!!!! hence minus one :3
             byteCounter = 0;
             chunk++;
           }
@@ -414,24 +405,30 @@ void StreamLogic(){
         }
       }
 
-      //resettomg framecomplettion bool
-      for (int b = 0; b < 16; b++){
-        frameCompletion[b] = false;
-      }
-
       //yeah
       timeLastPacket = millis();
       retries = 0;
 
+      udp.flush();
+
       //Sending received packet
       udp.beginPacket(deviceIp, PORT);
-      udp.write(frameReceived, 3);
+      udp.write(frameReceived, 1);
+      udp.endPacket();
+    }
+
+    //Hit the fourth packet will send confirmation packet to receive new packets
+    //This won't trigger if the first if statement fires.
+    else if (packetCounter % 6 == 0){
+      //Sending received packet
+      udp.beginPacket(deviceIp, PORT);
+      udp.write(frameReceived, 1);
       udp.endPacket();
     }
   }
 
   //if timeout has happened. Request missing frames. If the time passsed since last packet was 20ms
-  else if (timeLastPacket < millis() - 50){
+  else if (timeLastPacket < millis() - (50*retries)){
 
     Serial.println("Timeout! Asking for resend");
     Serial.print("Time since last packet: ");
@@ -447,21 +444,9 @@ void StreamLogic(){
       Serial.println("Timeout 3rd retry. Default to IDLE");
     }
 
-    //been too long since it's been sent a packet.
-    else{
-      for (int i = 0; i <= ChunkPerFrame; i++){
-        if (frameCompletion[i] == false){
-          frameFailed[i+1] = 255;
-        }
-        else{
-          frameFailed[i+1] = 0;
-        }
-      }
-
-      Serial.println("Asking for missing frames");
-
+    else{   
       udp.beginPacket(deviceIp, PORT);
-      udp.write(frameFailed, ChunkPerFrame+1);
+      udp.write(frameReceived, 1);
       udp.endPacket();
 
       retries++;

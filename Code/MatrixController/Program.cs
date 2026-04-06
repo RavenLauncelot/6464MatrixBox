@@ -15,17 +15,20 @@ public class MatrixController
     bool connected = false;
     const int port = 6767;
 
+    const int chunksPerFrame = 12;
+    const int preChunkSize = (64 * 64 * 3) / chunksPerFrame;
+
     UdpClient listener = new UdpClient();
     UdpClient sender = new UdpClient();
 
-    byte[][] frameBuffer = new byte[16][]; // 16 chunks sent per frame.
+    byte[][] frameBuffer = new byte[chunksPerFrame][]; // 16 chunks sent per frame.
 
     public MatrixController()
     {
         // Initialize each chunk buffer in the constructor
         for (int i = 0; i < frameBuffer.Length; i++)
         {
-            frameBuffer[i] = new byte[769]; // Each chunk will have 1 byte for the chunk number and the rest for pixel data. Each pixel is 3 bytes (RGB)
+            frameBuffer[i] = new byte[preChunkSize+1]; // Each chunk will have 1 byte for the chunk number and the rest for pixel data. Each pixel is 3 bytes (RGB)
         }
 
         IPEndPoint tempEndPoint = new IPEndPoint(IPAddress.Any, port);
@@ -154,10 +157,10 @@ public class MatrixController
         {
             FileName = "ffmpeg",
             Arguments =
-            "-i " + videos[input-1] + " " +    
+            "-i \"" + videos[input - 1] + "\" " +
             "-f rawvideo " +
-            "-vf \"scale=64:64\" " +
-            "-pix_fmt rgb24 " + 
+            "-vf \"scale=64:64,fps=24\" " +
+            "-pix_fmt rgb24 " +
             "-",
 
             UseShellExecute = false,
@@ -177,70 +180,70 @@ public class MatrixController
 
         Stopwatch stopwatch = new Stopwatch();
         stopwatch.Start();
-
+        int fps = 0;
 
         int chunkNumber = 1;
         while (true)
         {          
-            if (chunkNumber >= 17)
+            if (chunkNumber > chunksPerFrame)
             {
-                //Console.WriteLine("Frame completed.");
+                //Console.WriteLine("Frame Completed");
 
-                byte[] espResponse = listener.Receive(ref matrix.GetEndPoint());
+                chunkNumber = 1; //Reset chunk number for next frame
 
-                //Chunk received, send next Frame
-                if (espResponse[0] == (byte)0x10)
-                {
-                    chunkNumber = 1;
+                //won't need to send a packet as this will the 17th packet which doesn't exxist.
 
-                    stopwatch.Stop();
+                stopwatch.Stop();
 
-                    Console.SetCursorPosition(cursorPos.Left, cursorPos.Top);
-                    Console.WriteLine("FPS: " + 1000 / stopwatch.ElapsedMilliseconds);
+                fps = (int)(1000 / stopwatch.ElapsedMilliseconds);
 
-                    stopwatch.Reset();
-                    stopwatch.Start();
-                }
-                //Chunk not received, resend chunk
-                else if (espResponse[0] == (byte)0x11)
-                {
-                    //Console.WriteLine("All chunks not received");
+                Console.SetCursorPosition(cursorPos.Left, cursorPos.Top);
+                Console.WriteLine("FPS: " + fps);
 
-                    //We don't wanna read the first packet again.
-                    for (int packetIndex = 1; packetIndex <= 16; packetIndex++)
-                    {
-                        //Console.WriteLine("Packet index of each cell: " + espResponse[packetIndex]);
-
-                        //Means it needs it again
-                        if (espResponse[packetIndex] == 0xFF)
-                        {
-                            //Console.WriteLine("Missing chunk: " + packetIndex + "  <Resending chunk>");
-                            sender.Send(frameBuffer[packetIndex - 1], chunkSize, matrix.GetEndPoint());
-                        }
-                        else
-                        {
-                            //do nothing
-                        }
-                    }
-                    //Console.WriteLine("Huh");
-                }
-
-                else
-                {
-                    //Console.WriteLine("Unknown response from matrix: " + (int)espResponse[0]);
-                }
+                stopwatch.Reset();
+                stopwatch.Start();       
             }
 
-            else
+            else if (chunkNumber % 6 != 0)
             {
                 frameBuffer[chunkNumber - 1][0] = (byte)chunkNumber;
-                videoStream.ReadExactly(frameBuffer[chunkNumber - 1], 1, chunkSize - 1);
+                videoStream.ReadExactly(frameBuffer[chunkNumber - 1], 1, chunkSize-1);
 
                 sender.Send(frameBuffer[chunkNumber - 1], chunkSize, matrix.GetEndPoint());
 
                 //Console.WriteLine("Sent chunk " + (chunkNumber));
 
                 chunkNumber++;
+            }
+
+            else
+            {
+                //Every 4th chunk sent we wait till the ESP32 has dealt with the data or whatever
+                //we'll still send data otherwise it won't iterate through the loop
+
+                frameBuffer[chunkNumber - 1][0] = (byte)chunkNumber;
+                videoStream.ReadExactly(frameBuffer[chunkNumber - 1], 1, chunkSize-1);
+
+                sender.Send(frameBuffer[chunkNumber - 1], chunkSize, matrix.GetEndPoint());
+
+                //Console.WriteLine("Sent chunk " + (chunkNumber));
+
+                chunkNumber++;
+
+
+                byte[] espResponse = listener.Receive(ref matrix.GetEndPoint());
+
+                //Chunk received, send next Frame
+                if (espResponse[0] == (byte)0x10)
+                {
+                                       
+                }
+
+                else
+                {
+                    //Sent weird packet. Ignore and break loop.
+                    break;
+                }
             }
         }
     }
